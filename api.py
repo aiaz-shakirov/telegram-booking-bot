@@ -1,9 +1,18 @@
-from fastapi import FastAPI, HTTPException
+import os
+
+from fastapi import FastAPI, HTTPException, Depends, Header
 from typing import Optional
 from pydantic import BaseModel
 import asyncpg
 from datetime import datetime
 import database as db
+
+API_KEY = os.environ.get("API_KEY", "")
+async def require_api_key(x_api_key: str = Header(default="")):
+    if not API_KEY:
+        return
+    if x_api_key != API_KEY:
+        raise HTTPException(status_code=401, detail="Неверный или отсутствующий API-ключ")
 
 class MasterOut(BaseModel):
     id: int
@@ -68,7 +77,7 @@ def create_api_app(pool: asyncpg.Pool) -> FastAPI:
                 status=b["status"]
             ))
         return result
-    @app.delete("/bookings/{booking_id}")
+    @app.delete("/bookings/{booking_id}", dependencies=[Depends(require_api_key)])
     async def cancel_booking(booking_id: int, telegram_id: int):
         cancelled = await db.cancel_booking(app.state.pool, booking_id, telegram_id)
         if cancelled is None:
