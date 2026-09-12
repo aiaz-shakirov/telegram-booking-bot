@@ -21,7 +21,7 @@ class BookingCreate(BaseModel):
     master_id: int
     telegram_id: int
     client_name: str
-    booking_name: datetime
+    booking_time: datetime
 
 def create_api_app(pool: asyncpg.Pool) -> FastAPI:
     app = FastAPI(title="Booking Bot API")
@@ -48,7 +48,7 @@ def create_api_app(pool: asyncpg.Pool) -> FastAPI:
             master_id=payload.master_id,
             telegram_id=payload.telegram_id,
             client_name=payload.client_name,
-            booking_time=payload.booking_name
+            booking_time=payload.booking_time
         )
         if booking is None:
             raise HTTPException(status_code=409, detail="Это время уже занято")
