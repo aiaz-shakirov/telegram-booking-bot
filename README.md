@@ -32,6 +32,21 @@ cp .env.example .env
 - `TELEGRAM_API_TOKEN` — получить у [@BotFather](https://t.me/BotFather)
 - `DATABASE_*` — данные подключения к твоей PostgreSQL
 - `ADMIN_IDS` — твой Telegram ID через запятую
+- `API_KEY` — секретный ключ для защищённых эндпоинтов API.
+
+## Аутентификация API
+
+Эндпоинты `POST /bookings` и `DELETE /bookings/{id}` требуют заголовок `X-API-Key`:
+
+```bash
+curl -X POST "http://localhost:8000/bookings" \
+  -H "X-API-Key: твой_ключ_из_env" \
+  -H "Content-Type: application/json" \
+  -d '{"master_id": 1, "telegram_id": 123, "client_name": "Тест", "booking_time": "2026-09-20T15:00:00"}'
+```
+
+Эндпоинты на чтение (`GET`) остаются открытыми.
+
 
 ## Запуск
 
